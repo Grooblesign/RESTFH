@@ -1,6 +1,5 @@
 package controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import play.*;
@@ -10,61 +9,56 @@ import play.libs.Json;
 import views.html.*;
 
 import models.Person;
+import services.PersonService;
 
 public class Application extends Controller {
 
+	private static Json json = new Json();
+	
     public static Result index() {
         return ok(index.render("Your new application is ready."));
     }
 	
 	public static Result people() {
+	    Logger.info("method: people");
+
+		PersonService personService = new PersonService();
+		
+		List<Person> people = personService.getAll();
+		
+		response().setHeader("Access-Control-Allow-Origin", "*");
 		response().setContentType("application/json");
 
-		List<Person> people = new ArrayList<Person>();
-		
-		Person person = new Person();
-		person.setId(1);
-		person.setForenames("Paul John");
-		person.setSurname("Garner");
-		
-		people.add(person);
-		
-		person = new Person();
-		person.setId(2);
-		person.setForenames("Frederick John");
-		person.setSurname("Garner");
-		
-		people.add(person);
+		return ok(json.toJson(people));
+	}
+	
+	public static Result personById(int id) {
+	    Logger.info("method: personById");
 
-		person = new Person();
-		person.setId(3);
-		person.setForenames("Frederick");
-		person.setSurname("Garner");
-		
-		people.add(person);
+		PersonService personService = new PersonService();
 
-		person = new Person();
-		person.setId(4);
-		person.setForenames("Amos");
-		person.setSurname("Garner");
+		Person person = personService.getById(id);
 		
-		people.add(person);
+		if (person == null) {
+			return notFound(String.format("A person with id %s was not found", id));
+		} else {
+			response().setHeader("Access-Control-Allow-Origin", "*");
+			response().setContentType("application/json");
 
-		person = new Person();
-		person.setId(5);
-		person.setForenames("William");
-		person.setSurname("Garner");
+			return ok(json.toJson(person));
+		}
+	}
+	
+	public static Result peopleBySurname(String surname) {
+	    Logger.info("method: peopleBySurname");
+
+		PersonService personService = new PersonService();
+
+		List<Person> people = personService.getBySurname(surname);
 		
-		people.add(person);
+		response().setHeader("Access-Control-Allow-Origin", "*");
+		response().setContentType("application/json");
 
-		person = new Person();
-		person.setId(6);
-		person.setForenames("William");
-		person.setSurname("Garner");
-		
-		people.add(person);
-
-		Json json = new Json();
 		return ok(json.toJson(people));
 	}
 }

@@ -4,6 +4,7 @@ public class Person {
 	private int id;
 	private String forenames;
 	private String surname;
+	private String gender;
 	
 	public int getId() {
 		return id;
@@ -22,5 +23,11 @@ public class Person {
 	}
 	public void setSurname(String value) {
 		surname = value;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String value) {
+		gender = value;
 	}
 }
